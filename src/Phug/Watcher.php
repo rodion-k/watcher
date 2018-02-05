@@ -4,6 +4,7 @@ namespace Phug;
 
 use Illuminate\Filesystem\Filesystem;
 use JasonLewis\ResourceWatcher\Event as JLEvent;
+use JasonLewis\ResourceWatcher\Resource\FileResource;
 use JasonLewis\ResourceWatcher\Tracker;
 use JasonLewis\ResourceWatcher\Watcher as JLWatcher;
 
@@ -20,6 +21,11 @@ class Watcher
     private $listeners;
 
     /**
+     * @var callable change event callback.
+     */
+    private $changeEventCallback;
+
+    /**
      * Watcher constructor. Create a new watcher with tracker and filesystem.
      */
     public function __construct()
@@ -28,6 +34,39 @@ class Watcher
             new Tracker(),
             new Filesystem()
         );
+    }
+
+    /**
+     * Set the change event callback.
+     *
+     * @param callable $changeEventCallback
+     */
+    public function setChangeEventCallback(callable $changeEventCallback)
+    {
+        $this->changeEventCallback = $changeEventCallback;
+    }
+
+    /**
+     * Log event change to standard output.
+     *
+     * @param JLEvent $event
+     * @param string  $resource
+     * @param string  $path
+     */
+    public function logEventChange(JLEvent $event, FileResource $resource, $path)
+    {
+        $resourcePath = $path ?: $resource->getPath();
+        switch ($event->getCode()) {
+            case JLEvent::RESOURCE_DELETED:
+                echo "$resourcePath was deleted.".PHP_EOL;
+                break;
+            case JLEvent::RESOURCE_MODIFIED:
+                echo "$resourcePath was modified.".PHP_EOL;
+                break;
+            case JLEvent::RESOURCE_CREATED:
+                echo "$resourcePath was created.".PHP_EOL;
+                break;
+        }
     }
 
     /**
@@ -63,20 +102,13 @@ class Watcher
             return false;
         }
 
-        $this->listeners = array_map(function ($directory) {
+        $changeEventCallback = $this->changeEventCallback;
+        $this->listeners = array_map(function ($directory) use ($changeEventCallback) {
             $listener = $this->watcher->watch($directory);
-            $listener->onAnything(function (JLEvent $event, $resource, $path) {
-                switch ($event->getCode()) {
-                    case JLEvent::RESOURCE_DELETED:
-                        echo "$path was deleted.".PHP_EOL;
-                        break;
-                    case JLEvent::RESOURCE_MODIFIED:
-                        echo "$path was modified.".PHP_EOL;
-                        break;
-                    case JLEvent::RESOURCE_CREATED:
-                        echo "$path was created.".PHP_EOL;
-                        break;
-                }
+            $listener->onAnything(function (JLEvent $event, $resource, $path) use ($changeEventCallback) {
+                $changeEventCallback
+                    ? call_user_func($changeEventCallback, $event, $resource, $path)
+                    : $this->logEventChange($event, $resource, $path);
             });
 
             return $listener;
