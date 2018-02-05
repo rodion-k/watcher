@@ -5,6 +5,9 @@ namespace Phug\Test;
 use PHPUnit\Framework\TestCase;
 use Phug\Watcher;
 
+/**
+ * @coversDefaultClass \Phug\Watcher
+ */
 class WatcherTest extends TestCase
 {
     /**
