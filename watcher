@@ -1,0 +1,10 @@
+#!/usr/bin/env php
+<?php
+
+use Phug\Watcher;
+
+include 'vendor/autoload.php';
+
+$watcher = new Watcher();
+
+exit($watcher->watch(array_slice($argv, 1)) ? 0 : 1);
