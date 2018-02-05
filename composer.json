@@ -1,7 +1,7 @@
 {
-    "name": "phug/phug",
+    "name": "phug/watcher",
     "type": "library",
-    "keywords": ["phug", "compiler", "template", "dialect", "html", "views", "render", "presentation", "jade", "pug", "html", "php", "phtml"],
+    "keywords": ["directory", "watcher", "phug", "pug"],
     "description": "",
     "license": "MIT",
     "homepage": "http://phug-lang.com",
@@ -14,8 +14,8 @@
     ],
     "support": {
         "email": "support@phug-lang.com",
-        "issues": "https://github.com/phug-php/compiler/issues",
-        "source": "https://github.com/phug-php/compiler",
+        "issues": "https://github.com/phug-php/watcher/issues",
+        "source": "https://github.com/phug-php/watcher",
         "docs": "http://phug-lang.com/docs"
     },
     "minimum-stability": "stable",
