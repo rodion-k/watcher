@@ -20,17 +20,13 @@ matrix:
 install:
     - travis_retry composer self-update
     - travis_retry composer install
-    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-    - chmod +x ./cc-test-reporter
 
 script:
-    - ./cc-test-reporter before-build
     - vendor/bin/phug-dev check --report --coverage-php-version=5.6
-    - ./cc-test-reporter after-build --exit-code $EXIT_CODE
 
 notifications:
     slack: phug:nzXFnxhU14RWK2EQSDL0u08z
 
 addons:
     code_climate:
-        repo_token: cd1a1fbecb6b26000bcdc53d59b592735acb420dd96ce7151cd9424c39c95cf3
+        repo_token: 51c4d2fc70d816c3206e22a97f6c4d50cff4fe9dab77cd38c24742e6b2273696

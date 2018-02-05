@@ -15,6 +15,11 @@ class Watcher
     private $watcher;
 
     /**
+     * @var array list of last listeners created.
+     */
+    private $listeners;
+
+    /**
      * Watcher constructor. Create a new watcher with tracker and filesystem.
      */
     public function __construct()
@@ -23,6 +28,26 @@ class Watcher
             new Tracker(),
             new Filesystem()
         );
+    }
+
+    /**
+     * Get the current listeners.
+     *
+     * @return array
+     */
+    public function getListeners()
+    {
+        return $this->listeners;
+    }
+
+    /**
+     * Get the current watcher.
+     *
+     * @return JLWatcher
+     */
+    public function getWatcher()
+    {
+        return $this->watcher;
     }
 
     /**

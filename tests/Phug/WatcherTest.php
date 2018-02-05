@@ -3,8 +3,30 @@
 namespace Phug\Test;
 
 use PHPUnit\Framework\TestCase;
+use Phug\Watcher;
 
-class AbstractPhugTest extends TestCase
+class WatcherTest extends TestCase
 {
-    // TODO
+    /**
+     * @covers ::__construct
+     * @covers ::getWatcher
+     */
+    public function testGetWatcher()
+    {
+        $watcher = new Watcher();
+
+        self::assertInstanceOf(\JasonLewis\ResourceWatcher\Watcher::class, $watcher->getWatcher());
+    }
+
+    /**
+     * @covers ::watch
+     * @covers ::getListeners
+     */
+    public function testWatch()
+    {
+        $watcher = new Watcher();
+
+        self::assertNull($watcher->getListeners());
+        self::assertFalse($watcher->watch([]));
+    }
 }
