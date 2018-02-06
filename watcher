@@ -1,24 +1,10 @@
 #!/usr/bin/env php
 <?php
 
-use Phug\Watcher;
+use Phug\Watcher\Cli;
 
 include 'vendor/autoload.php';
 
-$watcher = new Watcher();
+$cli = new Cli();
 
-$arguments = [];
-
-foreach (array_slice($argv, 1) as $argument) {
-    if ($argument === '--exit-on-change') {
-        $watcher->setChangeEventCallback(function () {
-            exit(0);
-        });
-
-        continue;
-    }
-
-    $arguments[] = $argument;
-}
-
-exit($watcher->watch($arguments) ? 0 : 1);
+exit($cli->run($argv) ? 0 : 1);
