@@ -44,7 +44,7 @@ class Cli
 
         if (isset($options['file'])) {
             $file = $options['file'];
-            $watcher->setChangeEventCallback(function () use ($file) {
+            $watcher->setChangeEventCallback(function ($event, $resource, $path) use ($file) {
                 include $file;
             });
         }
