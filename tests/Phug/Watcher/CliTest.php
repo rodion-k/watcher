@@ -61,8 +61,7 @@ class CliTest extends AbstractWatcherTestCase
             ->addOption('foo', Cli::FLAG_OPTION)
             ->addOption('bar', Cli::FLAG_OPTION)
             ->removeOption('foo')
-            ->addOption('biz', Cli::VALUE_OPTION)
-        ;
+            ->addOption('biz', Cli::VALUE_OPTION);
 
         static::execInBackground('php '.
             escapeshellarg(realpath(__DIR__.'/../../createFileOneSecondLater.php')).' '.
