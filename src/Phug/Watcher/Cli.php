@@ -50,7 +50,7 @@ class Cli
      *
      * @return bool
      */
-    public function run(array $cliArguments)
+    public function run(array $cliArguments, $interval = 1000000, $timeout = null, callable $callback = null)
     {
         $watcher = new Watcher();
 
@@ -61,6 +61,7 @@ class Cli
         for ($i = 0; $i < $count; $i++) {
             $argument = $cliArguments[$i];
 
+            // @codeCoverageIgnoreStart
             if ($argument === '--exit-on-change') {
                 $watcher->setChangeEventCallback(function () {
                     exit(0);
@@ -68,10 +69,11 @@ class Cli
 
                 continue;
             }
+            // @codeCoverageIgnoreEnd
 
             foreach ($this->optionsMap as $optionName => $value) {
                 if ($value === true) {
-                    if ($argument === $optionName) {
+                    if ($argument === "--$optionName") {
                         $options[$optionName] = true;
 
                         continue 2;
@@ -86,9 +88,9 @@ class Cli
                     continue 2;
                 }
 
-                if ($argument === $optionName) {
-                    if (isset($cliArguments[$i + 1])) {
-                        $options[$value] = $cliArguments[$i + 1];
+                if ($argument === "--$optionName") {
+                    if (isset($cliArguments[++$i])) {
+                        $options[$value] = $cliArguments[$i];
                     }
 
                     continue 2;
@@ -119,11 +121,11 @@ class Cli
 
         if (isset($options['execute-on-change'])) {
             $file = $options['execute-on-change'];
-            $watcher->setChangeEventCallback(function ($event, $resource, $path) use ($file) {
+            $watcher->setChangeEventCallback(function ($event, $resource, $path) use ($file, $options) {
                 include $file;
             });
         }
 
-        return $watcher->watch($arguments);
+        return $watcher->watch($arguments, $interval, $timeout, $callback);
     }
 }

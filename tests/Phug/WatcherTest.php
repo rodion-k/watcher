@@ -2,13 +2,12 @@
 
 namespace Phug\Test;
 
-use PHPUnit\Framework\TestCase;
 use Phug\Watcher;
 
 /**
  * @coversDefaultClass \Phug\Watcher
  */
-class WatcherTest extends TestCase
+class WatcherTest extends AbstractWatcherTestCase
 {
     /**
      * @covers ::__construct

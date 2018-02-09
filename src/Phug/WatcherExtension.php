@@ -14,7 +14,7 @@ class WatcherExtension extends AbstractExtension
         ) ?: $default;
     }
 
-    protected function getTemplatesDirectories()
+    public function getTemplatesDirectories()
     {
         $paths = $this->getOption('paths', []);
         foreach (['base_dir', 'basedir'] as $option) {
@@ -27,7 +27,7 @@ class WatcherExtension extends AbstractExtension
         return $paths;
     }
 
-    public function watch()
+    public function watch($interval = 1000000, $timeout = null, callable $callback = null)
     {
         $watcher = new Watcher();
         $templatesDirectories = $this->getTemplatesDirectories();
@@ -52,7 +52,7 @@ class WatcherExtension extends AbstractExtension
 
         echo "Start watching\n - ".implode("\n - ", $templatesDirectories)."\n";
 
-        return $watcher->watch($templatesDirectories);
+        return $watcher->watch($templatesDirectories, $interval, $timeout, $callback);
     }
 
     public function getOptions()

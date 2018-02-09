@@ -92,11 +92,14 @@ class Watcher
     /**
      * Watch directories and returns true if watcher is running.
      *
-     * @param $directories
+     * @param array         $directories
+     * @param int           $interval
+     * @param int|null      $timeout
+     * @param callable|null $callback
      *
      * @return bool
      */
-    public function watch($directories)
+    public function watch($directories, $interval = 1000000, $timeout = null, callable $callback = null)
     {
         if (empty($directories) && !count($directories)) {
             return false;
@@ -114,7 +117,7 @@ class Watcher
             return $listener;
         }, $directories);
 
-        $this->watcher->start();
+        $this->watcher->start($interval, $timeout, $callback);
 
         return $this->watcher->isWatching();
     }
