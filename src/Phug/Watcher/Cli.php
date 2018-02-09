@@ -114,7 +114,7 @@ class Cli
             $success = copy($source, $destination);
             $message = $success ? "$destination initialized" : "Unable to write $destination";
 
-            echo "$message in ".getcwd();
+            echo "$message in ".getcwd()."\n";
 
             return $success;
         }
