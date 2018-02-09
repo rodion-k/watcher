@@ -110,11 +110,9 @@ class Cli
             }
 
             $success = copy($source, $destination);
+            $message = $success ? "$destination initialized" : "Unable to write $destination";
 
-            echo ($success
-                ? "$destination initialized"
-                : "Unable to write $destination"
-            )." in ".getcwd();
+            echo "$message in ".getcwd();
 
             return $success;
         }
