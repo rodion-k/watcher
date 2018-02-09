@@ -1,0 +1,2 @@
+disabled:
+  - no_singleline_whitespace_before_semicolons
