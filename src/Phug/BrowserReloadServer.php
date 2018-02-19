@@ -35,7 +35,8 @@ class BrowserReloadServer
             echo "Browser reloading listening on http://$host:$port\n";
             echo 'Important note: you should ensure this host/port pair'.
                 " cannot be reachable by non-authorized people over your network.\n";
-            shell_exec(PHP_BINARY." -S $host:$port ".
+            shell_exec(
+                PHP_BINARY." -S $host:$port ".
                 escapeshellarg(realpath(__DIR__.'/../reloadBrowser.php')).
                 ' 2>&1'
             );
