@@ -19,7 +19,7 @@ if (isset($_GET['directories'])) {
         exit(0);
     });
 
-    $watcher->watch((array)$_GET['directories']);
+    $watcher->watch((array) $_GET['directories']);
 
     exit(1);
 }
