@@ -2,6 +2,7 @@
 
 namespace Phug\Watcher;
 
+use Phug\BrowserReloadServer;
 use Phug\Watcher;
 
 class Cli
@@ -12,6 +13,7 @@ class Cli
     private $optionsMap = [
         'init'              => true,
         'exit-on-change'    => true,
+        'browser-reload'    => 'browser-reload',
         'execute-on-change' => 'execute-on-change',
     ];
 
@@ -89,8 +91,10 @@ class Cli
                 }
 
                 if ($argument === "--$optionName") {
-                    if (isset($cliArguments[++$i])) {
-                        $options[$value] = $cliArguments[$i];
+                    $options[$value] = isset($cliArguments[++$i]) ? $cliArguments[$i] : true;
+                    if (is_string($options[$value]) && substr($options[$value], 0, 2) === '--') {
+                        $i--;
+                        $options[$value] = true;
                     }
 
                     continue 2;
@@ -98,6 +102,12 @@ class Cli
             }
 
             $arguments[] = $argument;
+        }
+
+        if (isset($options['browser-reload'])) {
+            $reloadServer = new BrowserReloadServer(intval($options['browser-reload']), $arguments);
+
+            return $reloadServer->listen();
         }
 
         if (isset($options['init'])) {

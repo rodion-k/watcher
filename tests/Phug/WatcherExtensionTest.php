@@ -48,8 +48,8 @@ class WatcherExtensionTest extends AbstractWatcherTestCase
     {
         $extension = new WatcherExtension();
 
-        self::assertSame(['watch'], $extension->getOptions()['commands']);
-        self::assertSame(['watch'], array_keys($extension->getOptions()['macros']));
+        self::assertSame(['watch', 'browserReload'], $extension->getOptions()['commands']);
+        self::assertSame(['watch', 'browserReload'], array_keys($extension->getOptions()['macros']));
     }
 
     /**
