@@ -34,7 +34,7 @@ class CliTest extends AbstractWatcherTestCase
             escapeshellarg(realpath(__DIR__.'/../../deleteFileThreeSecondLater.php')).' '.
             escapeshellarg($view));
         ob_start();
-        $cli->run([$baseDir], 1000000, 10 * 1000000);
+        $cli->run([$baseDir], 1000000, (defined('HHVM_VERSION') ? 14 : 7) * 1000000);
         $events = explode("\n", trim(ob_get_clean()));
         static::removeDirectory($baseDir);
 
