@@ -32,6 +32,7 @@ class BrowserReloadServer
         if ($port < 80 || $port > $maxPort) {
             $port = 80;
         }
+        // @codeCoverageIgnoreStart
         while ($port <= $maxPort) {
             echo "Browser reloading listening on http://$host:$port\n";
             echo 'Important note: you should ensure this host/port pair'.
@@ -44,6 +45,7 @@ class BrowserReloadServer
             echo "The port $port seems busy, trying an other one...\n";
             $port++;
         }
+        // @codeCoverageIgnoreEnd
 
         echo "No port available above the minimal one you asked.\n";
 

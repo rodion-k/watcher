@@ -15,6 +15,7 @@ class Cli
         'init'              => true,
         'exit-on-change'    => true,
         'browser-reload'    => 'browser-reload',
+        'max-port'          => 'max-port',
         'execute-on-change' => 'execute-on-change',
         'listen'            => 'listen',
     ];
@@ -108,13 +109,20 @@ class Cli
         }
 
         if (isset($options['browser-reload'])) {
-            $reloadServer = new BrowserReloadServer(intval($options['browser-reload']), $arguments);
+            $reloadServer = new BrowserReloadServer(
+                intval($options['browser-reload']),
+                $arguments
+            );
 
-            return $reloadServer->listen();
+            return $reloadServer->listen(isset($options['max-port']) ? $options['max-port'] : null);
         }
 
         if (isset($options['listen'])) {
-            $devServer = new PhugDevServer($options['listen'], $arguments[1], isset($arguments[2]) ? $arguments[2] : 8066); //
+            $devServer = new PhugDevServer(
+                $options['listen'],
+                $arguments[0],
+                isset($arguments[1]) ? $arguments[1] : 8066
+            );
 
             return $devServer->listen();
         }

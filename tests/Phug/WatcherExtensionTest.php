@@ -48,8 +48,8 @@ class WatcherExtensionTest extends AbstractWatcherTestCase
     {
         $extension = new WatcherExtension();
 
-        self::assertSame(['watch', 'browserReload'], $extension->getOptions()['commands']);
-        self::assertSame(['watch', 'browserReload'], array_keys($extension->getOptions()['macros']));
+        self::assertSame(['watch', 'browserReload', 'listen'], $extension->getOptions()['commands']);
+        self::assertSame(['watch', 'browserReload', 'listen'], array_keys($extension->getOptions()['macros']));
     }
 
     /**
@@ -97,5 +97,72 @@ class WatcherExtensionTest extends AbstractWatcherTestCase
         self::assertContains('view.pug', $contents);
         self::assertContains('template cached successfully', $contents);
         self::assertContains('Hello world!', $cachedFile);
+    }
+
+    /**
+     * @covers ::browserReload
+     * @covers \Phug\BrowserReloadServer::<public>
+     */
+    public function testBrowserReloadCommand()
+    {
+        $extension = new WatcherExtension();
+
+        ob_start();
+        $reload = $extension->browserReload(1, 1);
+        $message = trim(ob_get_clean());
+
+        self::assertFalse($reload);
+        self::assertSame('No port available above the minimal one you asked.', $message);
+
+        ob_start();
+        $reload = $extension->browserReload('localhost:12', 1);
+        $message = trim(ob_get_clean());
+
+        self::assertFalse($reload);
+        self::assertSame('No port available above the minimal one you asked.', $message);
+    }
+
+    /**
+     * @covers ::listen
+     * @covers \Phug\PhugDevServer::<public>
+     */
+    public function testListenCommand()
+    {
+        $extension = new WatcherExtension();
+        $id = mt_rand(0, 999999);
+        $baseDir = sys_get_temp_dir().DIRECTORY_SEPARATOR.'pug-base'.$id;
+        static::addEmptyDirectory($baseDir);
+        $cwd = getcwd();
+        chdir($baseDir);
+
+        try {
+            $extension->listen('index.php');
+        } catch (\RuntimeException $exception) {
+            $message = $exception->getMessage();
+        }
+
+        static::removeDirectory($baseDir);
+        chdir($cwd);
+
+        self::assertSame('No watcher program found in the vendor/bin directory.', $message);
+    }
+
+    /**
+     * @covers ::getDocumentEvents
+     */
+    public function testBrowserReloadScriptAppend()
+    {
+        Phug::reset();
+        $extension = new WatcherExtension();
+
+        self::assertSame([], $extension->getDocumentEvents(0));
+        $events = $extension->getDocumentEvents(9876);
+        self::assertCount(1, $events);
+        Phug::setOption('on_document', $events);
+        $html = Phug::render("html\n  body\n    h1 Title");
+        Phug::reset();
+
+        self::assertContains('<script', $html);
+        self::assertContains('//localhost:9876', $html);
     }
 }

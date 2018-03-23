@@ -94,6 +94,7 @@ class CliTest extends AbstractWatcherTestCase
         $id = mt_rand(0, 999999);
         $baseDir = sys_get_temp_dir().DIRECTORY_SEPARATOR.'pug-base'.$id;
         static::addEmptyDirectory($baseDir);
+        $cwd = getcwd();
         chdir($baseDir);
         $cli = new Cli();
 
@@ -106,9 +107,53 @@ class CliTest extends AbstractWatcherTestCase
         $secondContents = ob_get_clean();
 
         static::removeDirectory($baseDir);
+        chdir($cwd);
 
         self::assertContains('phugBootstrap.php initialized in ', $firstContents);
         self::assertContains('pug-base'.$id, $firstContents);
         self::assertContains('phugBootstrap.php already exists in ', $secondContents);
+    }
+
+    /**
+     * @covers ::run
+     * @covers \Phug\BrowserReloadServer::<public>
+     */
+    public function testBrowserReloadCommand()
+    {
+        $cli = new Cli();
+
+        ob_start();
+        $cli->run(['--browser-reload', '--max-port', '1'], 1000000, 3 * 1000000);
+        $message = trim(ob_get_clean());
+
+        self::assertSame('No port available above the minimal one you asked.', $message);
+    }
+
+    /**
+     * @covers ::run
+     * @covers \Phug\PhugDevServer::<public>
+     */
+    public function testListenCommand()
+    {
+        $id = mt_rand(0, 999999);
+        $baseDir = sys_get_temp_dir().DIRECTORY_SEPARATOR.'pug-base'.$id;
+        static::addEmptyDirectory($baseDir);
+        $cwd = getcwd();
+        chdir($baseDir);
+        $cli = new Cli();
+        $message = null;
+
+        ob_start();
+        try {
+            $cli->run(['--listen', '9000', 'index.php'], 1000000, 3 * 1000000);
+        } catch (\RuntimeException $exception) {
+            $message = $exception->getMessage();
+        }
+        ob_end_clean();
+
+        static::removeDirectory($baseDir);
+        chdir($cwd);
+
+        self::assertSame('No watcher program found in the vendor/bin directory.', $message);
     }
 }

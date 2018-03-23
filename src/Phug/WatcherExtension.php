@@ -74,39 +74,43 @@ class WatcherExtension extends AbstractExtension
         return $watcher->watch($templatesDirectories, $interval, $timeout, $callback);
     }
 
-    public function getOptions()
+    public function getDocumentEvents($browserReloadPort)
     {
-        $documentEvents = [];
-        if ($browserReloadPort = intval(trim(getenv('BROWSER_RELOAD_PORT')))) {
-            $documentEvents[] = function (NodeEvent $event) use ($browserReloadPort) {
-                /** @var DocumentNode $document */
-                $document = $event->getNode();
-                foreach ($document->getChildren() as $child) {
-                    if ($child instanceof ElementNode && strtolower($child->getName()) === 'html') {
-                        $document = $child;
-                        break;
-                    }
-                }
-                foreach ($document->getChildren() as $child) {
-                    if ($child instanceof ElementNode && strtolower($child->getName()) === 'body') {
-                        $document = $child;
-                        break;
-                    }
-                }
-                $reloadScript = new ElementNode($document->getToken());
-                $reloadScript->setName('script');
-                $url = "http://localhost:$browserReloadPort?directories=.";
-                $code = new TextNode();
-                $addScript = "var s = document.createElement('script');\n".
-                    "s.async = true;\n".
-                    "s.src = '$url';\n".
-                    "document.body.appendChild(s);\n";
-                $code->setValue("window.onload = function () { $addScript };");
-                $reloadScript->appendChild($code);
-                $document->appendChild($reloadScript); //
-            };
+        if (!$browserReloadPort) {
+            return [];
         }
 
+        return [function (NodeEvent $event) use ($browserReloadPort) {
+            /** @var DocumentNode $document */
+            $document = $event->getNode();
+            foreach ($document->getChildren() as $child) {
+                if ($child instanceof ElementNode && strtolower($child->getName()) === 'html') {
+                    $document = $child;
+                    break;
+                }
+            }
+            foreach ($document->getChildren() as $child) {
+                if ($child instanceof ElementNode && strtolower($child->getName()) === 'body') {
+                    $document = $child;
+                    break;
+                }
+            }
+            $reloadScript = new ElementNode($document->getToken());
+            $reloadScript->setName('script');
+            $url = "//localhost:$browserReloadPort?directories=.";
+            $code = new TextNode();
+            $addScript = "var s = document.createElement('script');\n".
+                "s.async = true;\n".
+                "s.src = '$url';\n".
+                "document.body.appendChild(s);\n";
+            $code->setValue("window.onload = function () { $addScript };");
+            $reloadScript->appendChild($code);
+            $document->appendChild($reloadScript);
+        }];
+    }
+
+    public function getOptions()
+    {
         return [
             'macros'      => [
                 'watch'         => [$this, 'watch'],
@@ -118,7 +122,7 @@ class WatcherExtension extends AbstractExtension
                 'browserReload',
                 'listen',
             ],
-            'on_document' => $documentEvents,
+            'on_document' => $this->getDocumentEvents(intval(trim(getenv('BROWSER_RELOAD_PORT')))),
         ];
     }
 }
