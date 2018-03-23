@@ -3,6 +3,7 @@
 namespace Phug\Watcher;
 
 use Phug\BrowserReloadServer;
+use Phug\PhugDevServer;
 use Phug\Watcher;
 
 class Cli
@@ -15,6 +16,7 @@ class Cli
         'exit-on-change'    => true,
         'browser-reload'    => 'browser-reload',
         'execute-on-change' => 'execute-on-change',
+        'listen'            => 'listen',
     ];
 
     /**
@@ -84,8 +86,9 @@ class Cli
                     continue;
                 }
 
-                if (substr($argument, 0, strlen($optionName) + 3) === "--$optionName=") {
-                    $options[$value] = substr($argument, 20);
+                $length = strlen($optionName) + 3;
+                if (substr($argument, 0, $length) === "--$optionName=") {
+                    $options[$value] = substr($argument, $length);
 
                     continue 2;
                 }
@@ -108,6 +111,12 @@ class Cli
             $reloadServer = new BrowserReloadServer(intval($options['browser-reload']), $arguments);
 
             return $reloadServer->listen();
+        }
+
+        if (isset($options['listen'])) {
+            $devServer = new PhugDevServer($options['listen'], $arguments[1], isset($arguments[2]) ? $arguments[2] : 8066);//
+
+            return $devServer->listen();
         }
 
         if (isset($options['init'])) {

@@ -20,18 +20,19 @@ class BrowserReloadServer
         $this->directories = $directories;
     }
 
-    public function listen()
+    public function listen($maxPort = null)
     {
+        $maxPort = $maxPort ?: 65535;
         $port = $this->port;
         $host = 'localhost';
         if (is_string($port)) {
             list($host, $port) = explode(':', $port.':');
         }
         $port = intval($port);
-        if ($port < 80 || $port > 65535) {
+        if ($port < 80 || $port > $maxPort) {
             $port = 80;
         }
-        while ($port < 65535) {
+        while ($port <= $maxPort) {
             echo "Browser reloading listening on http://$host:$port\n";
             echo 'Important note: you should ensure this host/port pair'.
                 " cannot be reachable by non-authorized people over your network.\n";

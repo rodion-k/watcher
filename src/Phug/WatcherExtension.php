@@ -2,6 +2,12 @@
 
 namespace Phug;
 
+use Phug\Parser\Event\NodeEvent;
+use Phug\Parser\Node\AttributeNode;
+use Phug\Parser\Node\DocumentNode;
+use Phug\Parser\Node\ElementNode;
+use Phug\Parser\Node\TextNode;
+
 class WatcherExtension extends AbstractExtension
 {
     protected function getOption($name, $default = null)
@@ -27,9 +33,16 @@ class WatcherExtension extends AbstractExtension
         return $paths;
     }
 
-    public function browserReload($port = 8066)
+    public function browserReload($port = 8066, $maxPort = null)
     {
         $reloadServer = new BrowserReloadServer($port, $this->getTemplatesDirectories());
+
+        return $reloadServer->listen($maxPort);
+    }
+
+    public function listen($file, $server = 8000, $browserReloadPort = 8066)
+    {
+        $reloadServer = new PhugDevServer($server, $file, $browserReloadPort);
 
         return $reloadServer->listen();
     }
@@ -64,15 +77,49 @@ class WatcherExtension extends AbstractExtension
 
     public function getOptions()
     {
+        $documentEvents = [];
+        if ($browserReloadPort = intval(trim(getenv('BROWSER_RELOAD_PORT')))) {
+            $documentEvents[] = function (NodeEvent $event) use ($browserReloadPort) {
+                /** @var DocumentNode $document */
+                $document = $event->getNode();
+                foreach ($document->getChildren() as $child) {
+                    if ($child instanceof ElementNode && strtolower($child->getName()) === 'html') {
+                        $document = $child;
+                        break;
+                    }
+                }
+                foreach ($document->getChildren() as $child) {
+                    if ($child instanceof ElementNode && strtolower($child->getName()) === 'body') {
+                        $document = $child;
+                        break;
+                    }
+                }
+                $reloadScript = new ElementNode($document->getToken());
+                $reloadScript->setName('script');
+                $url = "http://localhost:$browserReloadPort?directories=.";
+                $code = new TextNode();
+                $addScript = "var s = document.createElement('script');\n".
+                    "s.async = true;\n".
+                    "s.src = '$url';\n".
+                    "document.body.appendChild(s);\n";
+                $code->setValue("window.onload = function () { $addScript };");
+                $reloadScript->appendChild($code);
+                $document->appendChild($reloadScript); //
+            };
+        }
+
         return [
-            'macros'   => [
+            'macros'      => [
                 'watch'         => [$this, 'watch'],
                 'browserReload' => [$this, 'browserReload'],
+                'listen'        => [$this, 'listen'],
             ],
-            'commands' => [
+            'commands'    => [
                 'watch',
                 'browserReload',
+                'listen',
             ],
+            'on_document' => $documentEvents,
         ];
     }
 }

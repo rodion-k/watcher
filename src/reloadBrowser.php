@@ -2,7 +2,10 @@
 
 namespace Phug;
 
+// @codeCoverageIgnoreStart
 if (isset($_GET['directories'])) {
+    set_time_limit(-1);
+
     $baseDir = __DIR__.'/..';
 
     for ($i = 0; $i < 5 && !file_exists($baseDir.'/vendor/autoload.php'); $i++) {
@@ -14,7 +17,8 @@ if (isset($_GET['directories'])) {
     $watcher = new Watcher();
 
     $watcher->setChangeEventCallback(function () {
-        echo 'window.reload();';
+        header('Content-type: text/javascript');
+        echo 'location.reload()';
 
         exit(0);
     });
@@ -23,3 +27,4 @@ if (isset($_GET['directories'])) {
 
     exit(1);
 }
+// @codeCoverageIgnoreEnd
