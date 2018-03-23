@@ -3,7 +3,6 @@
 namespace Phug;
 
 use Phug\Parser\Event\NodeEvent;
-use Phug\Parser\Node\AttributeNode;
 use Phug\Parser\Node\DocumentNode;
 use Phug\Parser\Node\ElementNode;
 use Phug\Parser\Node\TextNode;

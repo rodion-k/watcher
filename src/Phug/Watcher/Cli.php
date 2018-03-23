@@ -114,7 +114,7 @@ class Cli
         }
 
         if (isset($options['listen'])) {
-            $devServer = new PhugDevServer($options['listen'], $arguments[1], isset($arguments[2]) ? $arguments[2] : 8066);//
+            $devServer = new PhugDevServer($options['listen'], $arguments[1], isset($arguments[2]) ? $arguments[2] : 8066); //
 
             return $devServer->listen();
         }
