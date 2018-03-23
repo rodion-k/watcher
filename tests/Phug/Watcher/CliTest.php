@@ -144,11 +144,13 @@ class CliTest extends AbstractWatcherTestCase
         $message = null;
 
         ob_start();
+
         try {
             $cli->run(['--listen', '9000', 'index.php'], 1000000, 3 * 1000000);
         } catch (\RuntimeException $exception) {
             $message = $exception->getMessage();
         }
+
         ob_end_clean();
 
         static::removeDirectory($baseDir);
