@@ -84,7 +84,7 @@ class PhugDevServer
         if (strtolower(substr(php_uname(), 0, 3)) === 'win') {
             echo "Opening new window for browser-reload watching on port $browserReloadPort (or superior if not available).\n";
             pclose(popen("start $php $watcher --browser-reload=$browserReloadPort ".
-                "> watcher-output.log 2> watcher-error.log", 'r'));
+                '> watcher-output.log 2> watcher-error.log', 'r'));
             echo "Listening $file on $server.\n";
             echo shell_exec("set BROWSER_RELOAD_PORT=$browserReloadPort && $php -S $server $file");
 
@@ -93,7 +93,7 @@ class PhugDevServer
 
         echo "Browser-reload watching listening on port $browserReloadPort (or superior if not available).\n";
         shell_exec("$php $watcher --browser-reload=$browserReloadPort ".
-            "> watcher-output.log 2> watcher-error.log &");
+            '> watcher-output.log 2> watcher-error.log &');
         echo "Listening $file on $server.\n";
         echo shell_exec("BROWSER_RELOAD_PORT=$browserReloadPort $php -S $server $file");
 
