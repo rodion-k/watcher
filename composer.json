@@ -2,7 +2,7 @@
     "name": "phug/watcher",
     "type": "library",
     "keywords": ["directory", "watcher", "phug", "pug"],
-    "description": "",
+    "description": "Watcher for Phug, Pug (ex-Jade) PHP port, HTML template engine structured by indentation",
     "license": "MIT",
     "homepage": "http://phug-lang.com",
     "authors": [
