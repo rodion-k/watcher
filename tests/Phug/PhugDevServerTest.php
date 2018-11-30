@@ -28,7 +28,6 @@ class PhugDevServerTest extends AbstractWatcherTestCase
     }
 
     /**
-     * @group i
      * @covers ::<public>
      */
     public function testCreateArgumentsSwap()
