@@ -53,8 +53,11 @@ class WatcherExtension extends AbstractExtension
 
         $watcher->setChangeEventCallback(function ($event, $resource, $path) {
             if (file_exists($path)) {
+                $sadbox = Phug::getRenderer()->getNewSandBox(function () use ($path) {
+                    return Phug::cacheFile($path);
+                });
                 echo "Changes detected in $path\n";
-                echo ' - '.(Phug::cacheFile($path)
+                echo ' - '.($sadbox->getResult()
                         ? 'template cached successfully'
                         : 'cache failure'
                     )."\n";
