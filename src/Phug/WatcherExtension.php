@@ -54,6 +54,7 @@ class WatcherExtension extends AbstractExtension
         $watcher->setChangeEventCallback(function ($event, $resource, $path) {
             if (file_exists($path)) {
                 $sandbox = Phug::getRenderer()->getNewSandBox(function () use ($path) {
+                    Phug::initCompiler();
                     return Phug::cacheFile($path);
                 });
 
